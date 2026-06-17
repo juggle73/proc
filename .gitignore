@@ -1,0 +1,5 @@
+# proc — per-project mutable state, scaffolded by the SessionStart hook
+.proc/
+
+# IDE
+.idea/

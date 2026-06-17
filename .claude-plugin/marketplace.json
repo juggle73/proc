@@ -1,0 +1,15 @@
+{
+  "name": "proc",
+  "description": "A hook-driven FSM regulation system for Claude Code (single plugin: proc).",
+  "owner": {
+    "name": "Ara Israelyan",
+    "email": "a.israelyan@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "proc",
+      "source": "./",
+      "description": "Hook-driven FSM regulation system for Claude Code."
+    }
+  ]
+}
