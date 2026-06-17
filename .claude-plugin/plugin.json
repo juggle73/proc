@@ -1,6 +1,6 @@
 {
   "name": "proc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hook-driven FSM that routes each prompt to the right regulation and tracks per-project task state, so you don't memorize commands and only the needed regulation is loaded into context.",
   "author": {
     "name": "Ara Israelyan",

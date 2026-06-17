@@ -27,6 +27,17 @@ ACTIVE_PHASE=$2
 EOF
 }
 
+# A transition targets an EXISTING task row (new rows, with their human-authored columns,
+# are added by hand first — see dispatch.md). Uses the same id-trimming as the row update
+# below so the check never diverges from it. Exit 0 = found.
+row_exists() { # $1=task ; reads $STATUS
+	awk -v task="$1" '
+		BEGIN { FS="|" }
+		/^\|/ { id=$2; gsub(/^[ \t]+|[ \t]+$/, "", id); if (id == task) { found=1; exit } }
+		END { exit !found }
+	' "$STATUS"
+}
+
 if [ "${1:-}" = "--clear" ]; then
 	write_state "" ""
 	[ -f "$STATUS" ] && awk '/^ACTIVE:/ { print "ACTIVE: (none)"; next } { print }' "$STATUS" >"$STATUS.tmp" && mv "$STATUS.tmp" "$STATUS"
@@ -37,6 +48,13 @@ fi
 TASK="${1:?usage: transition.sh <task-id> <phase> [state] | --clear}"
 PHASE="${2:?usage: transition.sh <task-id> <phase> [state] | --clear}"
 STATE_COL="${3:-}"
+
+# Atomic refuse: if the row is missing, change nothing (not state.env, not ACTIVE) and fail,
+# rather than silently no-op the row update while flipping the active task.
+if [ ! -f "$STATUS" ] || ! row_exists "$TASK"; then
+	echo "transition.sh: no row for '$TASK' in $STATUS — add it to the registry first (dispatch.md: new rows are added by hand), then retry." >&2
+	exit 1
+fi
 
 write_state "$TASK" "$PHASE"
 
