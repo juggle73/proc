@@ -1,6 +1,6 @@
 {
   "name": "proc",
-  "description": "A hook-driven FSM regulation system for Claude Code (single plugin: proc).",
+  "description": "Marketplace for proc — a hook-driven finite-state machine for Claude Code that routes each prompt to the right regulation and tracks per-project task state.",
   "owner": {
     "name": "Ara Israelyan",
     "email": "a.israelyan@gmail.com"
@@ -9,7 +9,7 @@
     {
       "name": "proc",
       "source": "./",
-      "description": "Hook-driven FSM regulation system for Claude Code."
+      "description": "Hook-driven FSM that routes each prompt to the right regulation and tracks per-project task state, so you don't memorize commands and only the needed regulation is loaded into context."
     }
   ]
 }
