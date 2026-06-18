@@ -77,6 +77,40 @@ Install `jq` if it is missing: `brew install jq` (macOS), `apt install jq` (Debi
 
 Then restart Claude Code so the hooks register. On first prompt, `.proc/` is scaffolded automatically.
 
+### Install scope (where it lands)
+
+Plugins install at a **scope**. The typed `/plugin install proc@proc` above defaults to **user**
+scope (active in all your projects) — it does *not* prompt. To choose, either pass `--scope` or use
+the interactive `/plugin` menu (Discover → select → Install), which *does* ask:
+
+```
+/plugin install proc@proc --scope user      # you, everywhere (default)
+/plugin install proc@proc --scope project   # everyone on this repo (written to .claude/settings.json, committed)
+/plugin install proc@proc --scope local     # just you, just this repo (.claude/settings.local.json, gitignored)
+```
+
+### Turn proc on per project (team setup)
+
+Enablement is separate from installation and lives under `enabledPlugins` in `settings.json`. So you
+can install proc globally but only activate it where you want it. Disable by default, enable per repo:
+
+```jsonc
+// ~/.claude/settings.json — off everywhere by default
+{ "enabledPlugins": { "proc@proc": false } }
+
+// <repo>/.claude/settings.json — on for this repo, shared with the team (commit it)
+{ "enabledPlugins": { "proc@proc": true } }
+```
+
+Project settings override user settings, so proc switches on in that repo and stays off elsewhere.
+Precedence (strongest first): managed → `.claude/settings.local.json` (personal per-repo) →
+`.claude/settings.json` (team) → `~/.claude/settings.json` (your defaults). To opt out of a
+team-enabled proc on just your machine, set it to `false` in `.claude/settings.local.json`.
+
+Toggle an installed proc at runtime via the `/plugin` menu or `/plugin enable proc@proc` /
+`/plugin disable proc@proc`. Changes apply without a full restart via `/reload-plugins` — but since
+the hooks are snapshotted at session start, restart if the `[proc bootstrap]` line doesn't appear.
+
 ### Local development
 
 From a clone of this repo:
