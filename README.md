@@ -61,6 +61,19 @@ its own phase FSM. See `regulations/INDEX.md` for the full map.
     that folder). Read on demand, **not** injected — so per-prompt context stays small as the project grows.
   - `state.env` — machine state (active task + phase).
 
+## Token footprint
+
+proc keeps per-prompt context small by injecting only the lean index and loading task detail on
+demand. Measured against its own history and a heavier plugin:
+
+- **v0.2.0 vs v0.1.x** per-prompt injection: **−51% at 10 tasks, −71% at 50** (0.1.x grew ~14×
+  from 1→50 tasks; 0.2.0 grows ~3.7×, from the index table alone).
+- **Always-on tax** ~165 tokens (0 agents, 1 skill, 0 MCP tools), vs ~8 200 for a full workflow
+  suite like gsd — the cost of breadth, not a like-for-like capability claim.
+
+Full methodology, the numbers table, and the honest caveats (including where proc is *not* cheaper):
+[docs/benchmark.md](docs/benchmark.md).
+
 ## Requirements
 
 The hooks are POSIX shell scripts. On the machine running Claude Code you need:
