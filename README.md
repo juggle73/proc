@@ -55,8 +55,11 @@ its own phase FSM. See `regulations/INDEX.md` for the full map.
 
 - **Plugin (read-only, shared):** `regulations/`, `skills/`, `scripts/`, `hooks/` — installed under
   `${CLAUDE_PLUGIN_ROOT}`.
-- **Per-project state (mutable):** `${CLAUDE_PROJECT_DIR}/.proc/` — `STATUS.md` (task registry) and
-  `state.env` (machine state). Add `.proc/` to your `.gitignore`.
+- **Per-project state (mutable):** `${CLAUDE_PROJECT_DIR}/.proc/` — add it to your `.gitignore`:
+  - `STATUS.md` — the lean **index** (registry table + backlog); this is what the hook injects each prompt.
+  - `tasks/<id>/task.md` — each task's full definition, DoD, notes and phase log (plus any aux files in
+    that folder). Read on demand, **not** injected — so per-prompt context stays small as the project grows.
+  - `state.env` — machine state (active task + phase).
 
 ## Requirements
 

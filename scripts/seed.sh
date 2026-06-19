@@ -9,7 +9,7 @@ STATE_DIR="$PROJECT_DIR/.proc"
 
 [ -f "$STATE_DIR/STATUS.md" ] && exit 0  # already initialised
 
-mkdir -p "$STATE_DIR"
+mkdir -p "$STATE_DIR/tasks"  # per-task detail lives in tasks/<id>/task.md
 cp "$PLUGIN_ROOT/templates/STATUS.md" "$STATE_DIR/STATUS.md"
 cat >"$STATE_DIR/state.env" <<'EOF'
 # proc — machine state. The single source of truth for the hooks.

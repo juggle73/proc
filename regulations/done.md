@@ -7,7 +7,7 @@ Close the task and return to the dispatcher.
 The active task is in the `done` phase.
 
 ## Steps
-1. Briefly summarize what was done and verified.
+1. Briefly summarize what was done and verified in `.proc/tasks/<id>/task.md`.
 2. Check the `## Backlog` section in `STATUS.md` for items this task should have closed — close or re-file them; don't silently leave them.
 3. If a non-trivial fact surfaced that is not obvious from the code — save it to project memory.
 4. Move the task to the `done` state in the registry.

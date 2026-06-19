@@ -7,9 +7,9 @@ Address the findings discovered in `review` or `test`.
 The active task is in the `fix` phase. If the request is about something else → dispatch.
 
 ## Steps
-1. Take the list of findings from the task notes.
+1. Take the list of findings from the task's file `.proc/tasks/<id>/task.md`.
 2. Address them, in the style of the surrounding code.
-3. Note which fix round this is (cycle 1, 2, …) in the task notes.
+3. Note which fix round this is (cycle 1, 2, …) in `.proc/tasks/<id>/task.md`.
 
 ## Infinite-loop guard (hard)
 `fix → review → fix` is a loop. **After 2 rounds without convergence — stop and escalate to the user** (describe what is not converging and why), do not loop silently.

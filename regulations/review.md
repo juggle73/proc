@@ -21,7 +21,7 @@ Self.
 - `security-review` — if the changes touch security/sensitive areas.
 
 ## Transition (guarded)
-- Findings exist → `fix` (`ACTIVE_PHASE=fix`), record them in the task notes.
+- Findings exist → `fix` (`ACTIVE_PHASE=fix`), record them in `.proc/tasks/<id>/task.md`.
 - Clean and tests/verification are needed → `test`.
 - Clean and tests are not needed → `done`.
 - A finding is real but deliberately deferred → log it under `## Backlog` in `STATUS.md` (don't lose it), then proceed.

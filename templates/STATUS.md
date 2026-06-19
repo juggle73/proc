@@ -16,9 +16,15 @@ Deferred findings — real but not done now. Reviewed in `review.md` (where to f
 Format: `- origin · severity · description`
 
 <!--
+This file is the INDEX only: the registry table above + the Backlog. Each task's full
+definition, DoD, notes and phase log live in .proc/tasks/<id>/task.md (plus any aux files
+in that folder). Keep the `notes` cell here to one short phrase; put detail in task.md.
+
 Phases (FSM):  intake → plan → implement → review → (fix) → (test) → done
 States:        active · paused · blocked · done
-On a phase/task change run the transition helper (its exact path is printed by the bootstrap hook):
+New task (paths are printed by the bootstrap hook):
+  new-task.sh <id> "<title>"             — adds the row, creates tasks/<id>/task.md, sets ACTIVE.
+On a phase/task change:
   transition.sh <task> <phase> [state]   — updates this row + the ACTIVE field + state.env together.
-New task rows are added by hand first. ids are assigned sequentially: t1, t2, t3, …
+ids are assigned sequentially: t1, t2, t3, …
 -->
