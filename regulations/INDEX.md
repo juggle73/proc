@@ -31,6 +31,16 @@ ESCAPE from any non-terminal → plan (rethink) | dispatch (switch task)
 | test | `test.md` | running tests / verification | → fix / dispatch |
 | done | `done.md` | closing the task | → dispatch |
 
+## Autonomous cycle (overlay)
+
+`cycle.md` is not a phase — it is an **overlay** on the single-task FSM, armed by the `/proc:cycle`
+skill and driven by the Stop hook. While a cycle is armed for the active task (`.proc/cycle.env`),
+the Stop hook re-invokes the model each turn instead of ending it, so the task walks
+`implement → review → fix → … → test → done` without stopping for the user at each phase. The
+`plan → implement` agreement gate is **not** bypassed (the cycle pauses once for the user's OK after
+`plan`). Convergence budget: `CYCLE_MAX` review→fix rounds (default 3) then escalate; a hard tick
+ceiling in the Stop hook is the backstop. See `cycle.md`.
+
 ## Invariants (no-dead-end guarantee)
 
 1. Every phase has a regulation file (otherwise the Stop hook blocks the turn from ending).

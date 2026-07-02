@@ -51,6 +51,35 @@ done → dispatch
 `dispatch` is the project-level task multiplex (create / switch / list tasks); every task then runs
 its own phase FSM. See `regulations/INDEX.md` for the full map.
 
+## Autonomous cycle (`/cycle`)
+
+By default proc stops between phases so you stay in the loop. When you want a task driven to
+completion hands-off, arm the **autonomous cycle**:
+
+```
+/cycle add a --dry-run flag to the transition helper
+```
+
+This walks the task through `implement → review → fix → … → test → done` **without stopping at each
+phase**. Each round the change is checked by a review **panel** — the `code-review` skill (on the
+git diff), a task-conformance subagent that verifies the result against the task's definition and
+DoD, and `security-review` where relevant — and any findings are fixed and re-reviewed until the
+work converges.
+
+- **The plan gate still holds.** The cycle runs `intake`/`plan` and **pauses once for your explicit
+  OK** before writing code — it does not bypass proc's one agreement gate. Everything after approval
+  runs on its own.
+- **It always terminates.** Convergence budget is `CYCLE_MAX` review→fix rounds (default 3); after
+  that, or if a review keeps finding issues, the cycle stops and escalates to you with an honest
+  summary. A hard continuation ceiling in the Stop hook is the backstop.
+- **How it's driven (hooks, not willpower).** `/cycle` writes a marker (`.proc/cycle.env`); the Stop
+  hook (`scripts/guard-status.sh`) sees it and, while the task isn't `done`, blocks the turn from
+  ending and re-injects the cycle protocol — so the process can't quietly drift off the rails. It
+  pauses if you switch to another task and resumes when you switch back; stop it early with
+  `/cycle` → the injected `cycle.sh stop` command, or it clears itself when the task closes.
+
+Set a different round budget by passing it through when the task is armed (default 3).
+
 ## State vs. plugin
 
 - **Plugin (read-only, shared):** `regulations/`, `skills/`, `scripts/`, `hooks/` — installed under
@@ -60,6 +89,8 @@ its own phase FSM. See `regulations/INDEX.md` for the full map.
   - `tasks/<id>/task.md` — each task's full definition, DoD, notes and phase log (plus any aux files in
     that folder). Read on demand, **not** injected — so per-prompt context stays small as the project grows.
   - `state.env` — machine state (active task + phase).
+  - `cycle.env` — present only while an autonomous `/cycle` is armed (task id + round budget + the
+    Stop hook's continuation counter); removed when the cycle ends.
 
 ## Token footprint
 

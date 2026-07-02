@@ -11,6 +11,7 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 REG_DIR="$PLUGIN_ROOT/regulations"
 TRANSITION="$PLUGIN_ROOT/scripts/transition.sh"
 NEWTASK="$PLUGIN_ROOT/scripts/new-task.sh"
+CYCLE_SH="$PLUGIN_ROOT/scripts/cycle.sh"
 STATE_DIR="$PROJECT_DIR/.proc"
 STATE="$STATE_DIR/state.env"; STATUS="$STATE_DIR/STATUS.md"
 
@@ -32,12 +33,20 @@ TASK_PTR=""
 [ -n "${ACTIVE_TASK:-}" ] && [ -f "$TASK_FILE" ] && TASK_PTR="
 Active task detail (definition, DoD, notes): $TASK_FILE — Read it on demand when you need the task's specifics; it is NOT injected here."
 
+# Autonomous cycle overlay (armed by /proc:cycle). When active for the current task, the Stop hook
+# drives review→fix→test until `done`; surface it so the model acts per regulations/cycle.md.
+CYCLE_TASK=""; CYCLE_MAX=3; [ -f "$STATE_DIR/cycle.env" ] && . "$STATE_DIR/cycle.env"
+CYCLE_LINE=""
+[ -n "${CYCLE_TASK:-}" ] && CYCLE_LINE="
+[proc cycle] Autonomous cycle ON for task ${CYCLE_TASK} (budget: ${CYCLE_MAX:-3} review→fix rounds). The Stop hook keeps driving the FSM to \`done\`; act per $REG_DIR/cycle.md and drive the transitions yourself. The plan→implement agreement gate still holds."
+
 CTX=$(cat <<EOF
 [proc bootstrap] Active task: ${ACTIVE_TASK:-(none)} | phase: ${ACTIVE_PHASE:-(none)}
 
 Task registry ($STATUS):
 $REGISTRY
 $TASK_PTR
+$CYCLE_LINE
 
 Protocol:
 1. Read the regulation for the current state: $REG_FILE
@@ -50,6 +59,10 @@ Protocol:
    PROC_STATE_DIR="$STATE_DIR" "$TRANSITION" <task> <phase> [state]
    After closing a task, release ACTIVE with: PROC_STATE_DIR="$STATE_DIR" "$TRANSITION" --clear
    Full task definition/notes live in $STATE_DIR/tasks/<id>/task.md — write detail there, keep the STATUS.md row note to one phrase.
+6. Autonomous cycle (/proc:cycle) — drive a task to \`done\` without stopping each phase (after the plan is approved):
+   Arm:  PROC_STATE_DIR="$STATE_DIR" "$CYCLE_SH" start <id> [max-rounds]   (default budget: 3 review→fix rounds)
+   Stop: PROC_STATE_DIR="$STATE_DIR" "$CYCLE_SH" stop
+   The plan→implement agreement gate is NOT bypassed: the cycle pauses for the user OK after \`plan\`, then runs autonomously per $REG_DIR/cycle.md.
 EOF
 )
 jq -n --arg ctx "$CTX" '{hookSpecificOutput:{hookEventName:"UserPromptSubmit",additionalContext:$ctx}}'
